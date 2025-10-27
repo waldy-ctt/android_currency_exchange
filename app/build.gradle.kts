@@ -87,4 +87,11 @@ dependencies {
     implementation("com.github.bumptech.glide:glide:4.16.0")
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+
+    // Added for ViewModel integration with Compose
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.3")
+    // Added for extended Material icons like SwapVert
+    implementation("androidx.compose.material:material-icons-extended:1.6.8")
+    // Added for persisting user preferences
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
 }
