@@ -1,21 +1,38 @@
-# Add project specific ProGuard rules here.
-# You can control the set of applied configuration files using the
-# proguardFiles setting in build.gradle.
-#
-# For more details, see
-#   http://developer.android.com/guide/developing/tools/proguard.html
+# This file contains ProGuard rules for your application.
 
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
+# --- Keep Attributes for Reflection --- #
+# These attributes are essential for any library that uses reflection, including Retrofit and Gson.
+-keepattributes Signature,InnerClasses,EnclosingMethod
 
-# Uncomment this to preserve the line number information for
-# debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
+# --- Keep Application Code --- #
+# To ensure no part of your app's logic is incorrectly stripped, we will keep all of it.
+# This is a broad rule, but it is the safest approach to solve this specific crash.
+-keep class com.waldy.androidcurrencyexchange.** { *; }
+-keep interface com.waldy.androidcurrencyexchange.** { *; }
 
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
+# --- Kotlin & Coroutines --- #
+# Keep Kotlin metadata, which is vital for reflection.
+-keep class kotlin.Metadata { *; }
+# Keep coroutines-related classes that are often accessed via reflection.
+-keepnames class kotlinx.coroutines.internal.MainDispatcherFactory {}
+-keepnames class kotlinx.coroutines.android.AndroidDispatcherFactory {}
+-keep,allowobfuscation,allowshrinking class kotlin.coroutines.Continuation
+-keepclassmembers class kotlinx.coroutines.android.MainCoroutineDispatcher { public <init>(...); }
+
+# --- Gson Serialization --- #
+# Keep classes needed by Gson for serialization and deserialization.
+-keep class com.google.gson.reflect.TypeToken { *; }
+-keep class * extends com.google.gson.reflect.TypeToken { *; }
+-keepclassmembers class * {
+    @com.google.gson.annotations.SerializedName <fields>;
+}
+
+# --- Retrofit & OkHttp Networking --- #
+# Keep Retrofit, OkHttp, and Okio classes from being stripped.
+-keep class retrofit2.** { *; }
+-keepclassmembers interface retrofit2.** { *; }
+-keep class com.squareup.okhttp3.** { *; }
+-keep interface com.squareup.okhttp3.** { *; }
+-keep class okio.** { *; }
+-dontwarn com.squareup.okhttp3.**
+-dontwarn okio.**

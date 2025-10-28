@@ -147,7 +147,7 @@ private fun FeedbackButton(context: Context) {
     SettingsItem(title = t(StringKeys.SEND_FEEDBACK), value = "") {
         val intent = Intent(Intent.ACTION_SENDTO).apply {
             data = Uri.parse("mailto:")
-            putExtra(Intent.EXTRA_EMAIL, arrayOf("lethanhhieu.dev@gmail.com"))
+            putExtra(Intent.EXTRA_EMAIL, arrayOf("clocktoktok@gmail.com"))
             putExtra(Intent.EXTRA_SUBJECT, "App Feedback")
         }
         if (intent.resolveActivity(context.packageManager) != null) {

@@ -34,7 +34,7 @@ object Localization {
             StringKeys.SEND_FEEDBACK to "Send Feedback",
             StringKeys.REPORT_ISSUES to "Report issues or suggest features",
             StringKeys.VERSION to "Version",
-            StringKeys.AUTHOR_WALDY to "Lê Thanh Hiếu - Waldy",
+            StringKeys.AUTHOR_WALDY to "Le Thanh Hieu - Waldy",
             StringKeys.AUTHOR_HAU to "Nguyen Phuc Hau",
             StringKeys.ENGLISH to "English",
             StringKeys.VIETNAMESE to "Vietnamese",
