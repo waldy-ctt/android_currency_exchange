@@ -1,9 +1,9 @@
 -- Merging decision tree log ---
 manifest
-ADDED from /home/waldy/Usage/project/AndroidCurrencyExchange/app/src/main/AndroidManifest.xml:2:1-30:12
-INJECTED from /home/waldy/Usage/project/AndroidCurrencyExchange/app/src/main/AndroidManifest.xml:2:1-30:12
-INJECTED from /home/waldy/Usage/project/AndroidCurrencyExchange/app/src/main/AndroidManifest.xml:2:1-30:12
-INJECTED from /home/waldy/Usage/project/AndroidCurrencyExchange/app/src/main/AndroidManifest.xml:2:1-30:12
+ADDED from /home/waldy/Usage/project/AndroidCurrencyExchange/app/src/main/AndroidManifest.xml:2:1-39:12
+INJECTED from /home/waldy/Usage/project/AndroidCurrencyExchange/app/src/main/AndroidManifest.xml:2:1-39:12
+INJECTED from /home/waldy/Usage/project/AndroidCurrencyExchange/app/src/main/AndroidManifest.xml:2:1-39:12
+INJECTED from /home/waldy/Usage/project/AndroidCurrencyExchange/app/src/main/AndroidManifest.xml:2:1-39:12
 MERGED from [com.google.android.material:material:1.13.0] /home/waldy/.gradle/caches/8.13/transforms/283a040cd3a6787ab0caa8623a54069c/transformed/material-1.13.0/AndroidManifest.xml:17:1-24:12
 MERGED from [com.github.bumptech.glide:glide:4.16.0] /home/waldy/.gradle/caches/8.13/transforms/6406f42f5150510dad105d5042074623/transformed/glide-4.16.0/AndroidManifest.xml:2:1-9:12
 MERGED from [androidx.constraintlayout:constraintlayout:2.1.0] /home/waldy/.gradle/caches/8.13/transforms/ee21e3a997545d2e4936c41e6a29d626/transformed/constraintlayout-2.1.0/AndroidManifest.xml:2:1-11:12
@@ -96,9 +96,21 @@ uses-permission#android.permission.INTERNET
 ADDED from /home/waldy/Usage/project/AndroidCurrencyExchange/app/src/main/AndroidManifest.xml:5:5-66
 	android:name
 		ADDED from /home/waldy/Usage/project/AndroidCurrencyExchange/app/src/main/AndroidManifest.xml:5:22-64
+queries
+ADDED from /home/waldy/Usage/project/AndroidCurrencyExchange/app/src/main/AndroidManifest.xml:8:5-14:15
+intent#action:name:android.intent.action.SENDTO+data:scheme:mailto
+ADDED from /home/waldy/Usage/project/AndroidCurrencyExchange/app/src/main/AndroidManifest.xml:10:9-13:18
+action#android.intent.action.SENDTO
+ADDED from /home/waldy/Usage/project/AndroidCurrencyExchange/app/src/main/AndroidManifest.xml:11:13-67
+	android:name
+		ADDED from /home/waldy/Usage/project/AndroidCurrencyExchange/app/src/main/AndroidManifest.xml:11:21-64
+data
+ADDED from /home/waldy/Usage/project/AndroidCurrencyExchange/app/src/main/AndroidManifest.xml:12:13-45
+	android:scheme
+		ADDED from /home/waldy/Usage/project/AndroidCurrencyExchange/app/src/main/AndroidManifest.xml:12:19-42
 application
-ADDED from /home/waldy/Usage/project/AndroidCurrencyExchange/app/src/main/AndroidManifest.xml:7:5-28:19
-INJECTED from /home/waldy/Usage/project/AndroidCurrencyExchange/app/src/main/AndroidManifest.xml:7:5-28:19
+ADDED from /home/waldy/Usage/project/AndroidCurrencyExchange/app/src/main/AndroidManifest.xml:16:5-37:19
+INJECTED from /home/waldy/Usage/project/AndroidCurrencyExchange/app/src/main/AndroidManifest.xml:16:5-37:19
 MERGED from [com.google.android.material:material:1.13.0] /home/waldy/.gradle/caches/8.13/transforms/283a040cd3a6787ab0caa8623a54069c/transformed/material-1.13.0/AndroidManifest.xml:22:5-20
 MERGED from [com.google.android.material:material:1.13.0] /home/waldy/.gradle/caches/8.13/transforms/283a040cd3a6787ab0caa8623a54069c/transformed/material-1.13.0/AndroidManifest.xml:22:5-20
 MERGED from [androidx.constraintlayout:constraintlayout:2.1.0] /home/waldy/.gradle/caches/8.13/transforms/ee21e3a997545d2e4936c41e6a29d626/transformed/constraintlayout-2.1.0/AndroidManifest.xml:9:5-20
@@ -124,43 +136,43 @@ MERGED from [androidx.startup:startup-runtime:1.1.1] /home/waldy/.gradle/caches/
 	android:appComponentFactory
 		ADDED from [androidx.core:core:1.13.1] /home/waldy/.gradle/caches/8.13/transforms/f7838d5ecabfa33d724abb3aa73b8dc6/transformed/core-1.13.1/AndroidManifest.xml:28:18-86
 	android:supportsRtl
-		ADDED from /home/waldy/Usage/project/AndroidCurrencyExchange/app/src/main/AndroidManifest.xml:15:9-35
+		ADDED from /home/waldy/Usage/project/AndroidCurrencyExchange/app/src/main/AndroidManifest.xml:24:9-35
 	android:label
-		ADDED from /home/waldy/Usage/project/AndroidCurrencyExchange/app/src/main/AndroidManifest.xml:13:9-41
-	android.fullBackupContent
-		ADDED from /home/waldy/Usage/project/AndroidCurrencyExchange/app/src/main/AndroidManifest.xml:11:9-54
+		ADDED from /home/waldy/Usage/project/AndroidCurrencyExchange/app/src/main/AndroidManifest.xml:22:9-41
+	android:fullBackupContent
+		ADDED from /home/waldy/Usage/project/AndroidCurrencyExchange/app/src/main/AndroidManifest.xml:20:9-54
 	android:roundIcon
-		ADDED from /home/waldy/Usage/project/AndroidCurrencyExchange/app/src/main/AndroidManifest.xml:14:9-54
+		ADDED from /home/waldy/Usage/project/AndroidCurrencyExchange/app/src/main/AndroidManifest.xml:23:9-54
 	android:icon
-		ADDED from /home/waldy/Usage/project/AndroidCurrencyExchange/app/src/main/AndroidManifest.xml:12:9-43
+		ADDED from /home/waldy/Usage/project/AndroidCurrencyExchange/app/src/main/AndroidManifest.xml:21:9-43
 	android:allowBackup
-		ADDED from /home/waldy/Usage/project/AndroidCurrencyExchange/app/src/main/AndroidManifest.xml:9:9-35
+		ADDED from /home/waldy/Usage/project/AndroidCurrencyExchange/app/src/main/AndroidManifest.xml:18:9-35
 	android:theme
-		ADDED from /home/waldy/Usage/project/AndroidCurrencyExchange/app/src/main/AndroidManifest.xml:16:9-61
+		ADDED from /home/waldy/Usage/project/AndroidCurrencyExchange/app/src/main/AndroidManifest.xml:25:9-61
 	android:dataExtractionRules
-		ADDED from /home/waldy/Usage/project/AndroidCurrencyExchange/app/src/main/AndroidManifest.xml:10:9-65
+		ADDED from /home/waldy/Usage/project/AndroidCurrencyExchange/app/src/main/AndroidManifest.xml:19:9-65
 	android:name
-		ADDED from /home/waldy/Usage/project/AndroidCurrencyExchange/app/src/main/AndroidManifest.xml:8:9-44
+		ADDED from /home/waldy/Usage/project/AndroidCurrencyExchange/app/src/main/AndroidManifest.xml:17:9-44
 activity#com.waldy.androidcurrencyexchange.MainActivity
-ADDED from /home/waldy/Usage/project/AndroidCurrencyExchange/app/src/main/AndroidManifest.xml:17:9-27:20
+ADDED from /home/waldy/Usage/project/AndroidCurrencyExchange/app/src/main/AndroidManifest.xml:26:9-36:20
 	android:label
-		ADDED from /home/waldy/Usage/project/AndroidCurrencyExchange/app/src/main/AndroidManifest.xml:20:13-45
+		ADDED from /home/waldy/Usage/project/AndroidCurrencyExchange/app/src/main/AndroidManifest.xml:29:13-45
 	android:exported
-		ADDED from /home/waldy/Usage/project/AndroidCurrencyExchange/app/src/main/AndroidManifest.xml:19:13-36
+		ADDED from /home/waldy/Usage/project/AndroidCurrencyExchange/app/src/main/AndroidManifest.xml:28:13-36
 	android:theme
-		ADDED from /home/waldy/Usage/project/AndroidCurrencyExchange/app/src/main/AndroidManifest.xml:21:13-65
+		ADDED from /home/waldy/Usage/project/AndroidCurrencyExchange/app/src/main/AndroidManifest.xml:30:13-65
 	android:name
-		ADDED from /home/waldy/Usage/project/AndroidCurrencyExchange/app/src/main/AndroidManifest.xml:18:13-74
+		ADDED from /home/waldy/Usage/project/AndroidCurrencyExchange/app/src/main/AndroidManifest.xml:27:13-74
 intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
-ADDED from /home/waldy/Usage/project/AndroidCurrencyExchange/app/src/main/AndroidManifest.xml:22:13-26:29
+ADDED from /home/waldy/Usage/project/AndroidCurrencyExchange/app/src/main/AndroidManifest.xml:31:13-35:29
 action#android.intent.action.MAIN
-ADDED from /home/waldy/Usage/project/AndroidCurrencyExchange/app/src/main/AndroidManifest.xml:23:17-69
+ADDED from /home/waldy/Usage/project/AndroidCurrencyExchange/app/src/main/AndroidManifest.xml:32:17-69
 	android:name
-		ADDED from /home/waldy/Usage/project/AndroidCurrencyExchange/app/src/main/AndroidManifest.xml:23:25-66
+		ADDED from /home/waldy/Usage/project/AndroidCurrencyExchange/app/src/main/AndroidManifest.xml:32:25-66
 category#android.intent.category.LAUNCHER
-ADDED from /home/waldy/Usage/project/AndroidCurrencyExchange/app/src/main/AndroidManifest.xml:25:17-77
+ADDED from /home/waldy/Usage/project/AndroidCurrencyExchange/app/src/main/AndroidManifest.xml:34:17-77
 	android:name
-		ADDED from /home/waldy/Usage/project/AndroidCurrencyExchange/app/src/main/AndroidManifest.xml:25:27-74
+		ADDED from /home/waldy/Usage/project/AndroidCurrencyExchange/app/src/main/AndroidManifest.xml:34:27-74
 uses-sdk
 INJECTED from /home/waldy/Usage/project/AndroidCurrencyExchange/app/src/main/AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from /home/waldy/Usage/project/AndroidCurrencyExchange/app/src/main/AndroidManifest.xml

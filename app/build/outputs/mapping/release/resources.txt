@@ -439,9 +439,9 @@ ACTION_CLEAR_ACCESSIBILITY_FOCUS
 c
 Infinity
 d
+e
 _theme
 Compose:unobserve
-e
 commonReadUtf8LineStrict
 f
 data2
@@ -553,6 +553,7 @@ getLatteFoam
 ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE
 android.view.View$AttachInfo
 setHashCode$okio
+debounceJob
 java.lang.Float
 Dispatchers.IO
 layoutlib
@@ -691,8 +692,8 @@ cause
 displayCutout
 DRAGGING
 TLS_ECDH_anon_WITH_AES_256_CBC_SHA
-sendAccessibilitySemanticsStructureCh...
 NO_VALUE
+sendAccessibilitySemanticsStructureCh...
 substring
 Companion
 TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384
@@ -736,8 +737,8 @@ accessibility
 android:visibility:parent
 prev
 quic
-UINT32
 STOP_AND_RESET_REPLAY_CACHE
+UINT32
 impl
 CONNECT_ERROR
 kotlinx.coroutines.scheduler.keep.ali...
@@ -833,6 +834,7 @@ androidx.datastore.preferences.protob...
 commonHashCode
 weight
 author_waldy
+groupingSeparator
 UINT64
 DIAGNOSTIC_PROFILE_IS_COMPRESSED
 NAME
@@ -1402,6 +1404,7 @@ getBuffer$okio
 peekLong
 delete
 sendersAndCloseStatus
+symbols
 Clear
 UINT32_LIST
 commonReadUtf8
@@ -1545,6 +1548,7 @@ ratio
 NO_DECISION
 appendingSink
 contentDataType
+decimalSeparator
 OnLongClick
 android.intent.extra.SUBJECT
 ShuttingDown
@@ -1952,6 +1956,7 @@ android.graphics.drawable.VectorDrawable
 TabLayout
 onMoveFocusInChildren
 end
+oldValue
 lines
 fromIndex
 :authority
@@ -2021,7 +2026,6 @@ exit
 writeTo
 putFloat
 400
-com.waldy.androidcurrencyexchange.dom...
 insertIndex
 404
 RESULT_NOT_WRITABLE
@@ -2195,6 +2199,7 @@ getLastAccessedAtMillis
 android.net.http.X509TrustManagerExte...
 verticalScrollAxisRange
 targetVector
+conversionJob
 _COROUTINE.
 REMOVE_FROZEN
 getDOT$annotations
@@ -2630,8 +2635,8 @@ getFloat
 putLong
 MaterialButton
 timeout
-content
 collector
+content
 Number
 numberFormat
 rate
@@ -3084,7 +3089,6 @@ ON_CREATE
 date
 androidx.graphics.path
 data
-com.waldy.androidcurrencyexchange.dat...
 okio/Buffer$inputStream$1
 ON_RESUME
 readHexadecimalUnsignedLong

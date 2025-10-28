@@ -1,6 +1,7 @@
 package com.waldy.androidcurrencyexchange.domain.repository
 
 import com.waldy.androidcurrencyexchange.domain.model.Currency
+import kotlinx.coroutines.flow.Flow
 
 /**
  * Interface for the currency data repository.
@@ -9,11 +10,12 @@ import com.waldy.androidcurrencyexchange.domain.model.Currency
 interface CurrencyRepository {
 
     /**
-     * Fetches the conversion rate from one currency to another.
+     * Fetches the conversion rate from one currency to another, providing cached data first,
+     * then fresh data from the network.
      *
      * @param from The base currency.
      * @param to The target currency.
-     * @return A [GetConversionResult] containing the rate and the data source status (online/offline).
+     * @return A Flow that emits [GetConversionResult], first with cached data, then with live data.
      */
-    suspend fun getConversionRate(from: Currency, to: Currency): GetConversionResult
+    fun getConversionRate(from: Currency, to: Currency): Flow<GetConversionResult>
 }

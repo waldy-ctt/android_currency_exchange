@@ -7,6 +7,8 @@ import com.waldy.androidcurrencyexchange.data.remote.CurrencyApiService
 import com.waldy.androidcurrencyexchange.domain.model.Currency
 import com.waldy.androidcurrencyexchange.domain.repository.CurrencyRepository
 import com.waldy.androidcurrencyexchange.domain.repository.GetConversionResult
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
 /**
  * Concrete implementation of the CurrencyRepository from the Domain layer.
@@ -19,27 +21,36 @@ class CurrencyRepositoryImpl(
 
     private val gson = Gson()
 
-    override suspend fun getConversionRate(from: Currency, to: Currency): GetConversionResult {
-        return try {
-            // Try to fetch live rates
-            val response = apiService.getLatestRates(from.name.lowercase())
+    override fun getConversionRate(from: Currency, to: Currency): Flow<GetConversionResult> = flow {
+        val cachedJson = cache.getRates(from)
 
-            // Save the successful response to the cache
-            cache.saveRates(from, response.toString())
-
-            // Parse and extract the rate
-            val rate = parseRateFromResponse(response, from, to)
-            GetConversionResult(rate = rate, isOffline = false)
-
-        } catch (e: Exception) {
-            // On any network failure, try to fall back to the cache
-            val cachedJson = cache.getRates(from)
-            if (cachedJson != null) {
+        // 1. Emit cached value if it exists, but don't mark as offline yet.
+        if (cachedJson != null) {
+            try {
                 val cachedResponse = gson.fromJson(cachedJson, JsonObject::class.java)
                 val cachedRate = parseRateFromResponse(cachedResponse, from, to)
-                GetConversionResult(rate = cachedRate, isOffline = true)
+                emit(GetConversionResult(rate = cachedRate, isOffline = false))
+            } catch (e: Exception) {
+                // Cached data might be corrupt, ignore it.
+            }
+        }
+
+        // 2. Fetch live value from network.
+        try {
+            val response = apiService.getLatestRates(from.name.lowercase())
+            cache.saveRates(from, response.toString())
+            val rate = parseRateFromResponse(response, from, to)
+            emit(GetConversionResult(rate = rate, isOffline = false))
+        } catch (e: Exception) {
+            // If network fails, check if we already served a cached value.
+            if (cachedJson != null) {
+                // Re-emit the cached value, but this time, flag it as offline.
+                // This will make the offline badge appear without flickering.
+                val cachedResponse = gson.fromJson(cachedJson, JsonObject::class.java)
+                val cachedRate = parseRateFromResponse(cachedResponse, from, to)
+                emit(GetConversionResult(rate = cachedRate, isOffline = true))
             } else {
-                // If there's no cache, we must throw the original exception
+                // No cache and network failed, so propagate the error.
                 throw e
             }
         }
@@ -49,11 +60,10 @@ class CurrencyRepositoryImpl(
         val fromCurrencyCode = from.name.lowercase()
         val toCurrencyCode = to.name.lowercase()
 
-        // The API nests the rates inside an object with the from_currency code as the key
         val ratesObject = response.getAsJsonObject(fromCurrencyCode)
-            ?: throw Exception("Malformed API response: '${fromCurrencyCode}' object not found")
+            ?: throw Exception("Malformed API response: '$$fromCurrencyCode' object not found")
 
         return ratesObject.get(toCurrencyCode)?.asDouble
-            ?: throw Exception("Rate for '${toCurrencyCode}' not found in response")
+            ?: throw Exception("Rate for '$$toCurrencyCode' not found in response")
     }
 }
