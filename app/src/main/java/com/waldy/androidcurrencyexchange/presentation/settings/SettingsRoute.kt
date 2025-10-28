@@ -6,14 +6,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.waldy.androidcurrencyexchange.CurrencyApplication
-import com.waldy.androidcurrencyexchange.ui.util.Language
 
 /**
  * The stateful entry point for the Settings feature.
  * This composable is responsible for creating the ViewModel and connecting it to the screen.
  */
 @Composable
-fun SettingsRoute(onNavigateUp: () -> Unit) {
+fun SettingsRoute() {
     val application = LocalContext.current.applicationContext as CurrencyApplication
     val container = application.container
 
@@ -33,7 +32,6 @@ fun SettingsRoute(onNavigateUp: () -> Unit) {
         theme = theme,
         language = language,
         onThemeChange = viewModel::onThemeChange,
-        onLanguageChange = viewModel::onLanguageChange,
-        onNavigateUp = onNavigateUp
+        onLanguageChange = viewModel::onLanguageChange
     )
 }

@@ -1,7 +1,6 @@
 package com.waldy.androidcurrencyexchange.ui.util
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.staticCompositionLocalOf
 
 /**
@@ -20,7 +19,8 @@ object Localization {
             StringKeys.GENERAL to "General",
             StringKeys.FEEDBACK to "Feedback",
             StringKeys.SETTINGS to "Settings",
-            StringKeys.CURRENCY_CONVERTER to "Currency Converter",
+            StringKeys.OFFLINE_MODE to "Offline Mode",
+            StringKeys.CURRENCY_CONVERTER to "Converter",
             StringKeys.FROM_AMOUNT to "From Amount",
             StringKeys.SWAP_CURRENCIES to "Swap currencies",
             StringKeys.ERROR_PREFIX to "Error:",
@@ -33,6 +33,9 @@ object Localization {
             StringKeys.CHOOSE_LANGUAGE to "Choose Language",
             StringKeys.SEND_FEEDBACK to "Send Feedback",
             StringKeys.REPORT_ISSUES to "Report issues or suggest features",
+            StringKeys.VERSION to "Version",
+            StringKeys.AUTHOR_WALDY to "Lê Thanh Hiếu - Waldy",
+            StringKeys.AUTHOR_HAU to "Nguyen Phuc Hau",
             StringKeys.ENGLISH to "English",
             StringKeys.VIETNAMESE to "Vietnamese",
             StringKeys.CURRENCY_USD to "United States Dollar",
@@ -44,6 +47,7 @@ object Localization {
             StringKeys.CURRENCY_CHF to "Swiss Franc",
             StringKeys.CURRENCY_CNY to "Chinese Yuan",
             StringKeys.CURRENCY_VND to "Vietnamese Dong",
+            StringKeys.CURRENCY_KRW to "Korean Won"
             ),
         // --- Vietnamese Strings ---
         Language.VIETNAMESE to mapOf(
@@ -52,7 +56,8 @@ object Localization {
             StringKeys.GENERAL to "Chung",
             StringKeys.FEEDBACK to "Phản hồi",
             StringKeys.SETTINGS to "Cài đặt",
-            StringKeys.CURRENCY_CONVERTER to "Chuyển đổi tiền tệ",
+            StringKeys.OFFLINE_MODE to "Chế độ ngoại tuyến",
+            StringKeys.CURRENCY_CONVERTER to "Chuyển đổi",
             StringKeys.FROM_AMOUNT to "Số tiền gửi",
             StringKeys.SWAP_CURRENCIES to "Hoán đổi tiền tệ",
             StringKeys.ERROR_PREFIX to "Lỗi:",
@@ -65,6 +70,9 @@ object Localization {
             StringKeys.CHOOSE_LANGUAGE to "Chọn ngôn ngữ",
             StringKeys.SEND_FEEDBACK to "Gửi phản hồi",
             StringKeys.REPORT_ISSUES to "Báo cáo sự cố hoặc đề xuất tính năng",
+            StringKeys.VERSION to "Phiên bản",
+            StringKeys.AUTHOR_WALDY to "Lê Thanh Hiếu - Waldy",
+            StringKeys.AUTHOR_HAU to "Nguyễn Phúc Hậu",
             StringKeys.ENGLISH to "Tiếng Anh",
             StringKeys.VIETNAMESE to "Tiếng Việt",
             StringKeys.CURRENCY_USD to "Đô la Mỹ",
@@ -76,6 +84,7 @@ object Localization {
             StringKeys.CURRENCY_CHF to "Franc Thụy Sĩ",
             StringKeys.CURRENCY_CNY to "Nhân dân tệ Trung Quốc",
             StringKeys.CURRENCY_VND to "Việt Nam Đồng",
+            StringKeys.CURRENCY_KRW to "Won Hàn Quốc"
             )
     )
 

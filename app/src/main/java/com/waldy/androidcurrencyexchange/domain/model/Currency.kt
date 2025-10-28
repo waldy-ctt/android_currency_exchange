@@ -13,5 +13,6 @@ enum class Currency(val fullName: String) {
     CAD("Canadian Dollar"),
     CHF("Swiss Franc"),
     CNY("Chinese Yuan"),
-    VND("Vietnamese Dong")
+    VND("Vietnamese Dong"),
+    KRW("Korean Won")
 }

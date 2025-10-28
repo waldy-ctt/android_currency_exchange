@@ -13,7 +13,7 @@ interface CurrencyRepository {
      *
      * @param from The base currency.
      * @param to The target currency.
-     * @return The conversion rate as a Double.
+     * @return A [GetConversionResult] containing the rate and the data source status (online/offline).
      */
-    suspend fun getConversionRate(from: Currency, to: Currency): Double
+    suspend fun getConversionRate(from: Currency, to: Currency): GetConversionResult
 }

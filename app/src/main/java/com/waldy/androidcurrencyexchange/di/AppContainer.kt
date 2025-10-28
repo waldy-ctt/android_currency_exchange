@@ -1,6 +1,7 @@
 package com.waldy.androidcurrencyexchange.di
 
 import android.content.Context
+import com.waldy.androidcurrencyexchange.data.local.CurrencyCache
 import com.waldy.androidcurrencyexchange.data.preferences.UserPreferencesRepository
 import com.waldy.androidcurrencyexchange.data.remote.CurrencyApiService
 import com.waldy.androidcurrencyexchange.data.repository.CurrencyRepositoryImpl
@@ -26,9 +27,12 @@ class AppContainer(private val context: Context) {
 
     private val currencyApiService: CurrencyApiService = retrofit.create(CurrencyApiService::class.java)
 
-    // --- Repository Dependencies ---
-    private val currencyRepository: CurrencyRepository = CurrencyRepositoryImpl(currencyApiService)
+    // --- Local Data Dependencies ---
     private val userPreferencesRepository: UserPreferencesRepository = UserPreferencesRepository(context)
+    private val currencyCache: CurrencyCache = CurrencyCache(context)
+
+    // --- Repository Dependencies ---
+    private val currencyRepository: CurrencyRepository = CurrencyRepositoryImpl(currencyApiService, currencyCache)
 
     // --- Use Case Dependencies ---
     val getConversionRateUseCase: GetConversionRateUseCase

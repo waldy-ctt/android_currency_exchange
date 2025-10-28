@@ -11,6 +11,7 @@ object StringKeys {
     const val GENERAL = "general"
     const val FEEDBACK = "feedback"
     const val SETTINGS = "settings"
+    const val OFFLINE_MODE = "offline_mode"
 
     // --- Currency Converter --- 
     const val CURRENCY_CONVERTER = "currency_converter"
@@ -28,6 +29,9 @@ object StringKeys {
     const val CHOOSE_LANGUAGE = "choose_language"
     const val SEND_FEEDBACK = "send_feedback"
     const val REPORT_ISSUES = "report_issues"
+    const val VERSION = "version"
+    const val AUTHOR_WALDY = "author_waldy"
+    const val AUTHOR_HAU = "author_hau"
 
     // --- Languages ---
     const val ENGLISH = "english"
@@ -43,4 +47,5 @@ object StringKeys {
     const val CURRENCY_CHF = "currency_chf"
     const val CURRENCY_CNY = "currency_cny"
     const val CURRENCY_VND = "currency_vnd"
+    const val CURRENCY_KRW = "currency_krw"
 }

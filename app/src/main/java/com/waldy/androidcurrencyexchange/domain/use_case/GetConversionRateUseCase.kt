@@ -2,8 +2,14 @@ package com.waldy.androidcurrencyexchange.domain.use_case
 
 import com.waldy.androidcurrencyexchange.domain.model.Currency
 import com.waldy.androidcurrencyexchange.domain.repository.CurrencyRepository
+import com.waldy.androidcurrencyexchange.domain.repository.GetConversionResult
 import java.math.BigDecimal
 import java.math.RoundingMode
+
+data class ConversionOutput(
+    val convertedAmount: BigDecimal,
+    val isOffline: Boolean
+)
 
 /**
  * This use case encapsulates the business logic for converting a currency value.
@@ -11,15 +17,17 @@ import java.math.RoundingMode
  */
 class GetConversionRateUseCase(private val currencyRepository: CurrencyRepository) {
 
-    suspend operator fun invoke(from: Currency, to: Currency, amount: BigDecimal): BigDecimal {
+    suspend operator fun invoke(from: Currency, to: Currency, amount: BigDecimal): ConversionOutput {
         // Fetch the raw rate from the repository
-        val rate = currencyRepository.getConversionRate(from, to)
+        val result: GetConversionResult = currencyRepository.getConversionRate(from, to)
 
         // Perform the calculation using BigDecimal for precision
-        val conversionRate = BigDecimal(rate.toString())
-        val result = amount.multiply(conversionRate)
+        val conversionRate = BigDecimal(result.rate.toString())
+        val convertedAmount = amount.multiply(conversionRate)
 
         // Return the result rounded to 2 decimal places, which is standard for currency
-        return result.setScale(2, RoundingMode.HALF_UP)
+        val finalAmount = convertedAmount.setScale(2, RoundingMode.HALF_UP)
+
+        return ConversionOutput(finalAmount, result.isOffline)
     }
 }

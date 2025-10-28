@@ -10,6 +10,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
+import java.text.NumberFormat
+import java.util.Locale
 
 /**
  * UI state for the CurrencyExchangeScreen.
@@ -20,6 +22,7 @@ data class CurrencyExchangeUiState(
     val fromAmount: String = "1",
     val toAmount: String = "...",
     val isLoading: Boolean = false,
+    val isOffline: Boolean = false,
     val error: String? = null
 )
 
@@ -31,14 +34,39 @@ class CurrencyExchangeViewModel(private val getConversionRateUseCase: GetConvers
 
     private val _uiState = MutableStateFlow(CurrencyExchangeUiState())
     val uiState: StateFlow<CurrencyExchangeUiState> = _uiState.asStateFlow()
+    private val numberFormat = NumberFormat.getNumberInstance(Locale.getDefault())
 
     init {
         convert()
     }
 
     fun onFromAmountChange(amount: String) {
-        _uiState.update { it.copy(fromAmount = amount) }
+        _uiState.update { it.copy(fromAmount = sanitizeAmount(amount)) }
         convert()
+    }
+
+    private fun sanitizeAmount(amount: String): String {
+        val filteredChars = amount.filterIndexed { index, c ->
+            c.isDigit() || (c == '.' && amount.indexOf('.') == index)
+        }
+
+        // Limit the length of the integer part
+        val integerPart = filteredChars.split(".").getOrNull(0) ?: ""
+        if (integerPart.length > 12) {
+            return _uiState.value.fromAmount
+        }
+
+        // Limit the number of decimal places
+        val decimalPart = filteredChars.split(".").getOrNull(1)
+        if (decimalPart != null && decimalPart.length > 2) {
+            return _uiState.value.fromAmount
+        }
+
+        return when {
+            filteredChars.startsWith("0") && !filteredChars.startsWith("0.") && filteredChars.length > 1 ->
+                filteredChars.drop(1)
+            else -> filteredChars
+        }
     }
 
     fun onFromCurrencyChange(currency: Currency) {
@@ -78,7 +106,8 @@ class CurrencyExchangeViewModel(private val getConversionRateUseCase: GetConvers
                     to = _uiState.value.toCurrency,
                     amount = amount
                 )
-                _uiState.update { it.copy(toAmount = result.toPlainString(), isLoading = false) }
+                val formattedAmount = numberFormat.format(result.convertedAmount)
+                _uiState.update { it.copy(toAmount = formattedAmount, isLoading = false, isOffline = result.isOffline) }
             } catch (e: Exception) {
                 _uiState.update { it.copy(error = e.message, isLoading = false, toAmount = "") }
             }

@@ -8,7 +8,6 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import com.waldy.androidcurrencyexchange.ui.MainActivityScreen
 import com.waldy.androidcurrencyexchange.ui.theme.AndroidCurrencyExchangeTheme
 import com.waldy.androidcurrencyexchange.ui.util.Language
 import com.waldy.androidcurrencyexchange.ui.util.Localization
