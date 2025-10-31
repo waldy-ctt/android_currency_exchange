@@ -8,28 +8,28 @@ plugins {
 }
 
 // Create a properties object to hold the keystore data
-val keystoreProperties = Properties()
+//val keystoreProperties = Properties()
 // Specify the path to your properties file
-val keystorePropertiesFile = rootProject.file("app/keystore.properties")
+//val keystorePropertiesFile = rootProject.file("app/keystore.properties")
 
 // Load the properties from the file if it exists
-if (keystorePropertiesFile.exists()) {
-    keystoreProperties.load(FileInputStream(keystorePropertiesFile))
-}
+//if (keystorePropertiesFile.exists()) {
+//    keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+//}
 
 android {
     namespace = "com.waldy.androidcurrencyexchange"
     compileSdk = 36
 
     // This block configures the digital signature for your release build
-    signingConfigs {
-        create("release") {
-            keyAlias = keystoreProperties.getProperty("keyAlias")
-            keyPassword = keystoreProperties.getProperty("keyPassword")
-            storeFile = file(keystoreProperties.getProperty("storeFile"))
-            storePassword = keystoreProperties.getProperty("storePassword")
-        }
-    }
+//    signingConfigs {
+//        create("release") {
+//            keyAlias = keystoreProperties.getProperty("keyAlias")
+//            keyPassword = keystoreProperties.getProperty("keyPassword")
+//            storeFile = file(keystoreProperties.getProperty("storeFile"))
+//            storePassword = keystoreProperties.getProperty("storePassword")
+//        }
+//    }
 
     defaultConfig {
         applicationId = "com.waldy.androidcurrencyexchange"
@@ -41,19 +41,19 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
-    buildTypes {
-        release {
-            // Enable code shrinking, obfuscation, and optimization
-            isMinifyEnabled = true
-            isShrinkResources = true
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
-            // Apply the signing configuration to the release build type
-            signingConfig = signingConfigs.getByName("release")
-        }
-    }
+//    buildTypes {
+//        release {
+//            // Enable code shrinking, obfuscation, and optimization
+//            isMinifyEnabled = true
+//            isShrinkResources = true
+//            proguardFiles(
+//                getDefaultProguardFile("proguard-android-optimize.txt"),
+//                "proguard-rules.pro"
+//            )
+//            // Apply the signing configuration to the release build type
+//            signingConfig = signingConfigs.getByName("release")
+//        }
+//    }
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11

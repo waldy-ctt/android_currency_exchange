@@ -41,22 +41,41 @@ class ThousandSeparatorVisualTransformation : VisualTransformation {
         val offsetMapping = object : OffsetMapping {
             override fun originalToTransformed(offset: Int): Int {
                 val originalIntegerLength = integerPart.length
-                if (offset >= originalIntegerLength) {
+
+                // Handle offsets beyond the integer part (in decimal area)
+                if (offset > originalIntegerLength) {
                     val integerCommas = (originalIntegerLength - 1).coerceAtLeast(0) / 3
                     return offset + integerCommas
                 }
-                val commasBefore = (offset - 1).coerceAtLeast(0) / 3
-                return offset + commasBefore
+
+                // Calculate commas before this position in the integer part
+                val commasBefore = if (offset > 0) {
+                    val digitsFromRight = originalIntegerLength - offset
+                    val commasAfter = (digitsFromRight - 1).coerceAtLeast(0) / 3
+                    val totalCommas = (originalIntegerLength - 1).coerceAtLeast(0) / 3
+                    totalCommas - commasAfter
+                } else {
+                    0
+                }
+
+                return (offset + commasBefore).coerceIn(0, newText.length)
             }
 
             override fun transformedToOriginal(offset: Int): Int {
+                // Ensure we don't go out of bounds
+                val safeOffset = offset.coerceIn(0, newText.length)
+
                 val formattedIntegerLength = formattedInteger.length
-                if (offset >= formattedIntegerLength) {
+
+                // Handle offsets beyond the integer part (in decimal area)
+                if (safeOffset > formattedIntegerLength) {
                     val integerCommas = formattedInteger.count { it == ',' }
-                    return offset - integerCommas
+                    return (safeOffset - integerCommas).coerceIn(0, originalText.length)
                 }
-                val commasBefore = newText.substring(0, offset).count { it == ',' }
-                return offset - commasBefore
+
+                // Count commas before this position
+                val commasBefore = newText.substring(0, safeOffset).count { it == ',' }
+                return (safeOffset - commasBefore).coerceIn(0, originalText.length)
             }
         }
 

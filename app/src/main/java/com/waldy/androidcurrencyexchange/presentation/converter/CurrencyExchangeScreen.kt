@@ -128,7 +128,7 @@ private fun CurrencyRow(
             value = amount,
             onValueChange = onAmountChange,
             modifier = Modifier.weight(1f),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
             textStyle = MaterialTheme.typography.headlineSmall.copy(color = MaterialTheme.colorScheme.onSurface),
             enabled = isEditable,
             readOnly = !isEditable,
