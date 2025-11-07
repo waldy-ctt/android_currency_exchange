@@ -2,7 +2,7 @@ package com.waldy.androidcurrencyexchange.data.repository
 
 import com.google.gson.Gson
 import com.google.gson.JsonObject
-import com.waldy.androidcurrencyexchange.data.local.CurrencyCache
+import com.waldy.androidcurrencyexchange.data.db.dao.CurrencyOfflineDao
 import com.waldy.androidcurrencyexchange.data.remote.CurrencyApiService
 import com.waldy.androidcurrencyexchange.domain.model.Currency
 import com.waldy.androidcurrencyexchange.domain.repository.CurrencyRepository
@@ -16,29 +16,28 @@ import kotlinx.coroutines.flow.flow
  */
 class CurrencyRepositoryImpl(
     private val apiService: CurrencyApiService,
-    private val cache: CurrencyCache
+    private val currencyOfflineDao: CurrencyOfflineDao
 ) : CurrencyRepository {
 
     private val gson = Gson()
 
     override fun getConversionRate(from: Currency, to: Currency): Flow<GetConversionResult> = flow {
-        val cachedJson = cache.getRates(from)
 
         // 1. Emit cached value if it exists, but don't mark as offline yet.
-        if (cachedJson != null) {
-            try {
-                val cachedResponse = gson.fromJson(cachedJson, JsonObject::class.java)
-                val cachedRate = parseRateFromResponse(cachedResponse, from, to)
-                emit(GetConversionResult(rate = cachedRate, isOffline = false))
-            } catch (e: Exception) {
-                // Cached data might be corrupt, ignore it.
+        try {
+            // Try here since the getCurrencyRatio might throw exception when failed instead of return null
+            currencyOfflineDao.getCurrencyRatio(from.name, to.name).collect { (baseCurrency, targetCurrency, ratio, timestamp) ->
+                emit(GetConversionResult(rate = ratio, isOffline = false))
             }
+
+        } catch (e: Exception) {
+            // Cached data might be corrupt, ignore it.
         }
 
         // 2. Fetch live value from network.
         try {
             val response = apiService.getLatestRates(from.name.lowercase())
-            cache.saveRates(from, response.toString())
+            currencyOfflineDao.upsertAll(response.map { (baseCurrency, ratio) => return  })
             val rate = parseRateFromResponse(response, from, to)
             emit(GetConversionResult(rate = rate, isOffline = false))
         } catch (e: Exception) {
