@@ -3,11 +3,13 @@ package com.waldy.androidcurrencyexchange.data.repository
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.waldy.androidcurrencyexchange.data.db.dao.CurrencyOfflineDao
+import com.waldy.androidcurrencyexchange.data.db.model.CurrencyOffline
 import com.waldy.androidcurrencyexchange.data.remote.CurrencyApiService
 import com.waldy.androidcurrencyexchange.domain.model.Currency
 import com.waldy.androidcurrencyexchange.domain.repository.CurrencyRepository
 import com.waldy.androidcurrencyexchange.domain.repository.GetConversionResult
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
 
 /**
@@ -23,11 +25,14 @@ class CurrencyRepositoryImpl(
 
     override fun getConversionRate(from: Currency, to: Currency): Flow<GetConversionResult> = flow {
 
-        // 1. Emit cached value if it exists, but don't mark as offline yet.
+        var localData: CurrencyOffline? = null
+
+        // 1. Emit cached value if it exists.
         try {
             // Try here since the getCurrencyRatio might throw exception when failed instead of return null
-            currencyOfflineDao.getCurrencyRatio(from.name, to.name).collect { (baseCurrency, targetCurrency, ratio, timestamp) ->
-                emit(GetConversionResult(rate = ratio, isOffline = false))
+            localData = currencyOfflineDao.getCurrencyRatio(from.name.lowercase(), to.name.lowercase()).firstOrNull()
+            if (localData != null) {
+                emit(GetConversionResult(rate = localData.ratio, isOffline = false))
             }
 
         } catch (e: Exception) {
@@ -37,17 +42,26 @@ class CurrencyRepositoryImpl(
         // 2. Fetch live value from network.
         try {
             val response = apiService.getLatestRates(from.name.lowercase())
-            currencyOfflineDao.upsertAll(response.map { (baseCurrency, ratio) => return  })
+
+            // Save the entire response to the database for offline use.
+            val ratesObject = response.getAsJsonObject(from.name.lowercase())
+            val ratesToSave = ratesObject.entrySet().map { (currencyCode, rateElement) ->
+                CurrencyOffline(
+                    baseCurrency = from.name.lowercase(),
+                    targetCurrency = currencyCode,
+                    ratio = rateElement.asDouble,
+                    timestamp = System.currentTimeMillis()
+                )
+            }
+            currencyOfflineDao.upsertAll(ratesToSave)
+
             val rate = parseRateFromResponse(response, from, to)
             emit(GetConversionResult(rate = rate, isOffline = false))
         } catch (e: Exception) {
             // If network fails, check if we already served a cached value.
-            if (cachedJson != null) {
+            if (localData != null) {
                 // Re-emit the cached value, but this time, flag it as offline.
-                // This will make the offline badge appear without flickering.
-                val cachedResponse = gson.fromJson(cachedJson, JsonObject::class.java)
-                val cachedRate = parseRateFromResponse(cachedResponse, from, to)
-                emit(GetConversionResult(rate = cachedRate, isOffline = true))
+                emit(GetConversionResult(rate = localData.ratio, isOffline = true))
             } else {
                 // No cache and network failed, so propagate the error.
                 throw e
@@ -60,9 +74,9 @@ class CurrencyRepositoryImpl(
         val toCurrencyCode = to.name.lowercase()
 
         val ratesObject = response.getAsJsonObject(fromCurrencyCode)
-            ?: throw Exception("Malformed API response: '$$fromCurrencyCode' object not found")
+            ?: throw Exception("Malformed API response: '$fromCurrencyCode' object not found")
 
         return ratesObject.get(toCurrencyCode)?.asDouble
-            ?: throw Exception("Rate for '$$toCurrencyCode' not found in response")
+            ?: throw Exception("Rate for '$toCurrencyCode' not found in response")
     }
 }
