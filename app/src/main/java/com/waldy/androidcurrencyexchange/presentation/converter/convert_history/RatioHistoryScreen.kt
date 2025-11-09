@@ -1,5 +1,6 @@
 package com.waldy.androidcurrencyexchange.presentation.converter.convert_history
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -8,11 +9,15 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
@@ -30,10 +35,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.waldy.androidcurrencyexchange.CurrencyApplication
 import com.waldy.androidcurrencyexchange.domain.model.Currency
+import com.waldy.androidcurrencyexchange.ui.util.StringKeys
 import com.waldy.androidcurrencyexchange.ui.util.t
 
 @Composable
@@ -60,8 +67,15 @@ fun RatioHistoryScreen() {
                 selectedCurrency = uiState.fromCurrency,
                 onCurrencySelected = viewModel::onFromCurrencyChanged
             )
+
             Spacer(modifier = Modifier.width(16.dp))
-            Text(text = "to", style = MaterialTheme.typography.titleMedium)
+
+            Icon(
+                Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                contentDescription = "to",
+                modifier = Modifier.size(32.dp)
+            )
+
             Spacer(modifier = Modifier.width(16.dp))
             HistoryRatioCurrencySelector(
                 selectedCurrency = uiState.toCurrency,
@@ -69,9 +83,27 @@ fun RatioHistoryScreen() {
             )
         }
 
-        Box(modifier = Modifier.weight(1f)) {
+        Spacer(modifier = Modifier.height(10.dp))
+
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth()
+                .border(
+                    color = MaterialTheme.colorScheme.outline,
+                    width = 1.dp,
+                    shape = RoundedCornerShape(12.dp)
+                )
+        ) {
             if (uiState.isLoading && uiState.history.isEmpty()) {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+            } else if (!uiState.isLoading && uiState.history.isEmpty()) {
+                Text(
+                    text = t(StringKeys.NO_DATA),
+                    modifier = Modifier.align(Alignment.Center),
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium
+                )
             } else {
                 LazyColumn(
                     modifier = Modifier.padding(16.dp),
@@ -87,22 +119,34 @@ fun RatioHistoryScreen() {
 }
 
 @Composable
-private fun HistoryRatioCurrencySelector(selectedCurrency: Currency, onCurrencySelected: (Currency) -> Unit) {
+private fun HistoryRatioCurrencySelector(
+    selectedCurrency: Currency,
+    onCurrencySelected: (Currency) -> Unit
+) {
     var showDialog by remember { mutableStateOf(false) }
 
     Row(
-        modifier = Modifier.clickable { showDialog = true },
+        modifier = Modifier
+            .clickable { showDialog = true }
+            .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(12.dp))
+            .padding(horizontal = 16.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(selectedCurrency.name, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+        Text(
+            selectedCurrency.name,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold
+        )
         Icon(Icons.Default.ArrowDropDown, contentDescription = "Select currency")
     }
 
     if (showDialog) {
         Dialog(onDismissRequest = { showDialog = false }) {
-            Card(modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)) {
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
                 LazyColumn {
                     items(Currency.entries) {
                         val nameKey = "currency_${it.name.lowercase()}"

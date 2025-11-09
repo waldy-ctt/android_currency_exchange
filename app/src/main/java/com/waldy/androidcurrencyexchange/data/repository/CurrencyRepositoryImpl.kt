@@ -1,6 +1,6 @@
 package com.waldy.androidcurrencyexchange.data.repository
 
-import com.google.gson.Gson
+import android.util.Log
 import com.google.gson.JsonObject
 import com.waldy.androidcurrencyexchange.data.db.dao.CurrencyHistoryDao
 import com.waldy.androidcurrencyexchange.data.db.dao.CurrencyOfflineDao
@@ -30,8 +30,6 @@ class CurrencyRepositoryImpl(
     private val currencyOfflineDao: CurrencyOfflineDao,
     private val currencyHistoryDao: CurrencyHistoryDao
 ) : CurrencyRepository {
-
-    private val gson = Gson()
 
     override fun getConversionRate(from: Currency, to: Currency): Flow<GetConversionResult> = flow {
 
@@ -75,46 +73,76 @@ class CurrencyRepositoryImpl(
     }
 
     override fun getHistory(from: Currency, to: Currency): Flow<List<CurrencyHistory>> {
-        return currencyHistoryDao.getHistory(from.name.lowercase(), to.name.lowercase())
+        val fromCurrencyCode = from.name.lowercase()
+        val toCurrencyCode = to.name.lowercase()
+
+        return currencyHistoryDao.getHistory(fromCurrencyCode, toCurrencyCode)
             .onStart { // This block runs in a coroutine when the flow is first collected
                 coroutineScope { // Creates a scope for our parallel jobs
                     val today = LocalDate.now()
-                    val existingDates = currencyHistoryDao.getHistory(from.name.lowercase(), to.name.lowercase())
-                        .first().map { it.date }.toSet()
 
-                    val jobs = (0..29).map { i ->
-                        async { // Launch each network call in parallel
-                            val date = today.minusDays(i.toLong())
-                            val dateString = date.format(DateTimeFormatter.ISO_LOCAL_DATE)
+                    // 1. Always fetch the latest (today's) ratio to keep it fresh.
+                    try {
+                        val latestResponse = apiService.getHistoricalRates("latest", fromCurrencyCode)
+                        val ratesObject = latestResponse.getAsJsonObject(fromCurrencyCode)
+                        val latestRate = ratesObject?.get(toCurrencyCode)?.asDouble
 
-                            if (dateString in existingDates) {
-                                return@async null // Don't re-fetch data we already have
-                            }
+                        if (latestRate != null) {
+                            val todayHistory = CurrencyHistory(
+                                baseCurrency = fromCurrencyCode,
+                                targetCurrency = toCurrencyCode,
+                                date = today.format(DateTimeFormatter.ISO_LOCAL_DATE),
+                                ratio = latestRate
+                            )
+                            // Using upsert will insert or update today's record.
+                            currencyHistoryDao.upsertAll(listOf(todayHistory))
+                        }
+                    } catch (e: Exception) {
+                        Log.e("CurrencyRepository", "Failed to fetch latest rate", e)
+                        // Could not fetch today's rate, proceed with cached data.
+                    }
 
-                            try {
-                                val response = apiService.getHistoricalRates(dateString, from.name.lowercase())
+                    // 2. Check if we need to backfill the history (e.g., first launch).
+                    val existingHistory = currencyHistoryDao.getHistory(fromCurrencyCode, toCurrencyCode).first()
+                    if (existingHistory.size < 30) {
+                        val existingDates = existingHistory.map { it.date }.toSet()
 
-                                val ratesObject = response.getAsJsonObject(from.name.lowercase())
-                                val rate = ratesObject?.get(to.name.lowercase())?.asDouble
+                        // Fetch the last 29 days (plus today makes 30).
+                        val jobs = (1..29).map { i ->
+                            async {
+                                val date = today.minusDays(i.toLong())
+                                val dateString = date.format(DateTimeFormatter.ISO_LOCAL_DATE)
 
-                                if (rate != null) {
-                                    CurrencyHistory(
-                                        baseCurrency = from.name.lowercase(),
-                                        targetCurrency = to.name.lowercase(),
-                                        date = dateString,
-                                        ratio = rate
-                                    )
-                                } else {
-                                    null
+                                // Don't re-fetch data we already have.
+                                if (dateString in existingDates) {
+                                    return@async null
                                 }
-                            } catch (e: Exception) {
-                                null // Ignore errors for single days
+
+                                try {
+                                    val response = apiService.getHistoricalRates(dateString, fromCurrencyCode)
+                                    val rate = response.getAsJsonObject(fromCurrencyCode)
+                                        ?.get(toCurrencyCode)?.asDouble
+
+                                    if (rate != null) {
+                                        CurrencyHistory(
+                                            baseCurrency = fromCurrencyCode,
+                                            targetCurrency = toCurrencyCode,
+                                            date = dateString,
+                                            ratio = rate
+                                        )
+                                    } else {
+                                        null
+                                    }
+                                 } catch (e: Exception) {
+                                    Log.e("CurrencyRepository", "Failed to fetch history for $dateString", e)
+                                    null // Ignore errors for single past days.
+                                }
                             }
                         }
-                    }
-                    val newHistoryEntries = jobs.awaitAll().filterNotNull()
-                    if (newHistoryEntries.isNotEmpty()) {
-                        currencyHistoryDao.upsertAll(newHistoryEntries)
+                        val newHistoryEntries = jobs.awaitAll().filterNotNull()
+                        if (newHistoryEntries.isNotEmpty()) {
+                            currencyHistoryDao.upsertAll(newHistoryEntries)
+                        }
                     }
                 }
             }

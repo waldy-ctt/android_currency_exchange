@@ -48,4 +48,6 @@ object StringKeys {
     const val CURRENCY_CNY = "currency_cny"
     const val CURRENCY_VND = "currency_vnd"
     const val CURRENCY_KRW = "currency_krw"
+
+    const val NO_DATA = "No Data"
 }

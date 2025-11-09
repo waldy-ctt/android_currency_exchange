@@ -127,7 +127,10 @@ fun CurrencyExchangeScreen(
         )
 
         // Table for Ratio History
-        RatioHistoryScreen()
+        Spacer(modifier = Modifier.height(32.dp))
+        RatioHistoryScreen(
+
+        )
 
         state.error?.let {
             Text(

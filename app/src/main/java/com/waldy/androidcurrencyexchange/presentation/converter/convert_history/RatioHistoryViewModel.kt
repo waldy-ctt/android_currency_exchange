@@ -1,5 +1,6 @@
 package com.waldy.androidcurrencyexchange.presentation.converter.convert_history
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.waldy.androidcurrencyexchange.data.db.model.CurrencyHistory
@@ -68,6 +69,7 @@ class RatioHistoryViewModel(
 
             getHistoryUseCase(from, to)
                 .onEach { historyData ->
+                    Log.d("Load History", "loadHistory: $historyData")
                     _uiState.update {
                         it.copy(
                             history = historyData,

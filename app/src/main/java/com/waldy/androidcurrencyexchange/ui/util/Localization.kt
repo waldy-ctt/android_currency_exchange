@@ -47,7 +47,8 @@ object Localization {
             StringKeys.CURRENCY_CHF to "Swiss Franc",
             StringKeys.CURRENCY_CNY to "Chinese Yuan",
             StringKeys.CURRENCY_VND to "Vietnamese Dong",
-            StringKeys.CURRENCY_KRW to "Korean Won"
+            StringKeys.CURRENCY_KRW to "Korean Won",
+            StringKeys.NO_DATA to "No Data",
             ),
         // --- Vietnamese Strings ---
         Language.VIETNAMESE to mapOf(
@@ -84,7 +85,8 @@ object Localization {
             StringKeys.CURRENCY_CHF to "Franc Thụy Sĩ",
             StringKeys.CURRENCY_CNY to "Nhân dân tệ Trung Quốc",
             StringKeys.CURRENCY_VND to "Việt Nam Đồng",
-            StringKeys.CURRENCY_KRW to "Won Hàn Quốc"
+            StringKeys.CURRENCY_KRW to "Won Hàn Quốc",
+            StringKeys.NO_DATA to "Không có dữ liệu",
             )
     )
 

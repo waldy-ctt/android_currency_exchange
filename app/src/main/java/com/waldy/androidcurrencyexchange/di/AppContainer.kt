@@ -24,7 +24,7 @@ class AppContainer(private val context: Context) {
 
     // --- Network Dependencies ---
     private val retrofit = Retrofit.Builder()
-        .baseUrl("https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api/")
+        .baseUrl("https://cdn.jsdelivr.net/npm/")
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 
