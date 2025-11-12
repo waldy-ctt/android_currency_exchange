@@ -148,6 +148,10 @@ class CurrencyRepositoryImpl(
             }
     }
 
+    override fun clearHistory(date: String) {
+        currencyHistoryDao.clearHistoryData(date = date)
+    }
+
     private fun parseRateFromResponse(response: JsonObject, from: Currency, to: Currency): Double {
         val fromCurrencyCode = from.name.lowercase()
         val toCurrencyCode = to.name.lowercase()

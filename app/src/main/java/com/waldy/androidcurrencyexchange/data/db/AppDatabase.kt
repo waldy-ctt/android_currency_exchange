@@ -11,7 +11,11 @@ import com.waldy.androidcurrencyexchange.data.db.model.CurrencyHistory
 import com.waldy.androidcurrencyexchange.data.db.model.CurrencyOffline
 import com.waldy.androidcurrencyexchange.data.db.model.UserPreferences
 
-@Database(entities = [UserPreferences::class, CurrencyOffline::class, CurrencyHistory::class], version = 3, exportSchema = false)
+@Database(
+    entities = [UserPreferences::class, CurrencyOffline::class, CurrencyHistory::class],
+    version = 3,
+    exportSchema = false
+)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun userPreferencesDao(): UserPreferencesDao
@@ -29,8 +33,8 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "app_database"
                 )
-                .fallbackToDestructiveMigration()
-                .build()
+                    .fallbackToDestructiveMigration(false)
+                    .build()
                 INSTANCE = instance
                 instance
             }

@@ -28,4 +28,13 @@ interface CurrencyRepository {
      * @return A Flow that emits the list of historical data.
      */
     fun getHistory(from: Currency, to: Currency): Flow<List<CurrencyHistory>>
+
+    /**
+     * Clear old history data.
+     *
+     * @param date The data with date before this will be delete YYYY-MM-DD
+     * @return void
+     */
+    fun clearHistory(date: String)
+
 }

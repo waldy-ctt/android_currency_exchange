@@ -21,6 +21,7 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -34,6 +35,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -106,11 +108,56 @@ fun RatioHistoryScreen() {
                 )
             } else {
                 LazyColumn(
-                    modifier = Modifier.padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    modifier = Modifier.padding(horizontal = 16.dp)
                 ) {
+                    // Table Header
+                    item {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                text = t(StringKeys.DATE),
+                                style = MaterialTheme.typography.titleSmall,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.weight(1f)
+                            )
+                            Text(
+                                text = t(StringKeys.RATIO),
+                                style = MaterialTheme.typography.titleSmall,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.weight(1f),
+                                textAlign = TextAlign.End
+                            )
+                        }
+                        HorizontalDivider()
+                    }
+
+                    // Table Rows
                     items(uiState.history) { historyItem ->
-                        Text(text = "${historyItem.date}: ${historyItem.ratio}")
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 12.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = historyItem.date,
+                                modifier = Modifier.weight(1f),
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                            Text(
+                                // Format to 2 decimal places for readability
+                                text = "%.2f".format(historyItem.ratio),
+                                modifier = Modifier.weight(1f),
+                                style = MaterialTheme.typography.bodyMedium,
+                                textAlign = TextAlign.End
+                            )
+                        }
+                        HorizontalDivider()
                     }
                 }
             }

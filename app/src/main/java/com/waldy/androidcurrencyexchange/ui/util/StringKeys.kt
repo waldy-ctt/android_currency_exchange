@@ -50,4 +50,8 @@ object StringKeys {
     const val CURRENCY_KRW = "currency_krw"
 
     const val NO_DATA = "No Data"
+
+    const val RATIO = "Ratio"
+
+    const val DATE = "Date"
 }
