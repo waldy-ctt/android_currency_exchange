@@ -32,21 +32,23 @@ class CurrencyRepositoryImpl(
 ) : CurrencyRepository {
 
     override fun getConversionRate(from: Currency, to: Currency): Flow<GetConversionResult> = flow {
-
+        val oneHourInMillis = 3600 * 1000
         var localData: CurrencyOffline? = null
 
-        // 1. Emit cached value if it exists.
+        // 1. Emit cached value if it exists and is not stale.
         try {
             localData = currencyOfflineDao.getCurrencyRatio(from.name.lowercase(), to.name.lowercase()).firstOrNull()
-            if (localData != null) {
-                emit(GetConversionResult(rate = localData.ratio, isOffline = false))
-            }
+            val isStale = (System.currentTimeMillis() - (localData?.timestamp ?: 0)) > oneHourInMillis
 
+            if (localData != null && !isStale) {
+                emit(GetConversionResult(rate = localData.ratio, isOffline = false))
+                return@flow // We have fresh data, no need to fetch from network.
+            }
         } catch (e: Exception) {
             // Cached data might be corrupt, ignore it.
         }
 
-        // 2. Fetch live value from network.
+        // 2. Fetch live value from network (if no data, or data is stale).
         try {
             val response = apiService.getLatestRates(from.name.lowercase())
 
@@ -65,6 +67,7 @@ class CurrencyRepositoryImpl(
             emit(GetConversionResult(rate = rate, isOffline = false))
         } catch (e: Exception) {
             if (localData != null) {
+                // If network fails, emit the stale data but flag it as offline.
                 emit(GetConversionResult(rate = localData.ratio, isOffline = true))
             } else {
                 throw e
@@ -77,51 +80,28 @@ class CurrencyRepositoryImpl(
         val toCurrencyCode = to.name.lowercase()
 
         return currencyHistoryDao.getHistory(fromCurrencyCode, toCurrencyCode)
-            .onStart { // This block runs in a coroutine when the flow is first collected
-                coroutineScope { // Creates a scope for our parallel jobs
+            .onStart {
+                coroutineScope {
                     val today = LocalDate.now()
+                    val formatter = DateTimeFormatter.ISO_LOCAL_DATE
 
-                    // 1. Always fetch the latest (today's) ratio to keep it fresh.
-                    try {
-                        val latestResponse = apiService.getHistoricalRates("latest", fromCurrencyCode)
-                        val ratesObject = latestResponse.getAsJsonObject(fromCurrencyCode)
-                        val latestRate = ratesObject?.get(toCurrencyCode)?.asDouble
-
-                        if (latestRate != null) {
-                            val todayHistory = CurrencyHistory(
-                                baseCurrency = fromCurrencyCode,
-                                targetCurrency = toCurrencyCode,
-                                date = today.format(DateTimeFormatter.ISO_LOCAL_DATE),
-                                ratio = latestRate
-                            )
-                            // Using upsert will insert or update today's record.
-                            currencyHistoryDao.upsertAll(listOf(todayHistory))
-                        }
-                    } catch (e: Exception) {
-                        Log.e("CurrencyRepository", "Failed to fetch latest rate", e)
-                        // Could not fetch today's rate, proceed with cached data.
-                    }
-
-                    // 2. Check if we need to backfill the history (e.g., first launch).
+                    // 1. Get all history from DB and identify missing dates in the last 30 days
                     val existingHistory = currencyHistoryDao.getHistory(fromCurrencyCode, toCurrencyCode).first()
-                    if (existingHistory.size < 30) {
-                        val existingDates = existingHistory.map { it.date }.toSet()
+                    val existingDates = existingHistory.map { it.date }.toSet()
+                    val requiredDates = (0..29).map { today.minusDays(it.toLong()).format(formatter) }
 
-                        // Fetch the last 29 days (plus today makes 30).
-                        val jobs = (1..29).map { i ->
+                    // Always include today to be fetched to get the latest rate
+                    val missingDates = requiredDates.filter { it !in existingDates || it == today.format(formatter) }
+
+                    // 2. Fetch missing historical data in parallel
+                    if (missingDates.isNotEmpty()) {
+                        val fetchJobs = missingDates.map { dateString ->
                             async {
-                                val date = today.minusDays(i.toLong())
-                                val dateString = date.format(DateTimeFormatter.ISO_LOCAL_DATE)
-
-                                // Don't re-fetch data we already have.
-                                if (dateString in existingDates) {
-                                    return@async null
-                                }
-
                                 try {
-                                    val response = apiService.getHistoricalRates(dateString, fromCurrencyCode)
-                                    val rate = response.getAsJsonObject(fromCurrencyCode)
-                                        ?.get(toCurrencyCode)?.asDouble
+                                    // "latest" for today, specific date string otherwise
+                                    val apiDateString = if (LocalDate.parse(dateString, formatter).isEqual(today)) "latest" else dateString
+                                    val response = apiService.getHistoricalRates(apiDateString, fromCurrencyCode)
+                                    val rate = response.getAsJsonObject(fromCurrencyCode)?.get(toCurrencyCode)?.asDouble
 
                                     if (rate != null) {
                                         CurrencyHistory(
@@ -133,22 +113,26 @@ class CurrencyRepositoryImpl(
                                     } else {
                                         null
                                     }
-                                 } catch (e: Exception) {
+                                } catch (e: Exception) {
                                     Log.e("CurrencyRepository", "Failed to fetch history for $dateString", e)
-                                    null // Ignore errors for single past days.
+                                    null // Don't block everything if one day fails
                                 }
                             }
                         }
-                        val newHistoryEntries = jobs.awaitAll().filterNotNull()
+                        val newHistoryEntries = fetchJobs.awaitAll().filterNotNull()
                         if (newHistoryEntries.isNotEmpty()) {
                             currencyHistoryDao.upsertAll(newHistoryEntries)
                         }
                     }
+
+                    // 3. Prune old data (older than 35 days)
+                    val pruneDate = today.minusDays(35).format(formatter)
+                    clearHistory(pruneDate)
                 }
             }
     }
 
-    override fun clearHistory(date: String) {
+    override suspend fun clearHistory(date: String) {
         currencyHistoryDao.clearHistoryData(date = date)
     }
 

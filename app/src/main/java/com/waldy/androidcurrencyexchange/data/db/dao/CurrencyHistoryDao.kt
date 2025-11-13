@@ -18,5 +18,5 @@ interface CurrencyHistoryDao {
     fun getHistory(baseCurrency: String, targetCurrency: String): Flow<List<CurrencyHistory>>
 
     @Query("DELETE FROM currency_history WHERE date < :date")
-    fun clearHistoryData(date: String) // date in YYYY-MM-DD
+    suspend fun clearHistoryData(date: String) // date in YYYY-MM-DD
 }

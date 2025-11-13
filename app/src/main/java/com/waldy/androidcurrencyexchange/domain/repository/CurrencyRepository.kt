@@ -35,6 +35,6 @@ interface CurrencyRepository {
      * @param date The data with date before this will be delete YYYY-MM-DD
      * @return void
      */
-    fun clearHistory(date: String)
+    suspend fun clearHistory(date: String)
 
 }
