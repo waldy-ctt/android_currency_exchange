@@ -21,7 +21,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.SwapVert
-import androidx.compose.material.icons.filled.Timeline
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -32,7 +31,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -60,7 +58,6 @@ fun CurrencyExchangeRoute() {
         factory = CurrencyExchangeViewModelFactory(application.container.getConversionRateUseCase)
     )
     val uiState by viewModel.uiState.collectAsState()
-
 
     CurrencyExchangeScreen(
         state = uiState,
@@ -93,7 +90,31 @@ fun CurrencyExchangeScreen(
             Spacer(modifier = Modifier.height(8.dp))
         }
 
-        // "From" currency row
+        ConversionSection(state, onFromAmountChange, onFromCurrencyChange, onToCurrencyChange, onSwapCurrencies)
+
+        Spacer(modifier = Modifier.height(32.dp))
+        RatioHistoryScreen()
+
+        // xu ly loi o day hoi don gian. nen hien thi snackbar thi hon
+        state.error?.let {
+            Text(
+                text = "${t(StringKeys.ERROR_PREFIX)} $it",
+                color = MaterialTheme.colorScheme.error,
+                modifier = Modifier.padding(top = 16.dp)
+            )
+        }
+    }
+}
+
+@Composable
+private fun ConversionSection(
+    state: CurrencyExchangeUiState,
+    onFromAmountChange: (String) -> Unit,
+    onFromCurrencyChange: (Currency) -> Unit,
+    onToCurrencyChange: (Currency) -> Unit,
+    onSwapCurrencies: () -> Unit
+) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
         CurrencyRow(
             amount = state.fromAmount,
             onAmountChange = onFromAmountChange,
@@ -104,20 +125,16 @@ fun CurrencyExchangeScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            // Swap button
-            IconButton(onClick = onSwapCurrencies, enabled = !state.isLoading) {
-                Icon(
-                    Icons.Default.SwapVert,
-                    contentDescription = t(StringKeys.SWAP_CURRENCIES),
-                    modifier = Modifier.size(32.dp)
-                )
-            }
+        IconButton(onClick = onSwapCurrencies, enabled = !state.isLoading) {
+            Icon(
+                Icons.Default.SwapVert,
+                contentDescription = t(StringKeys.SWAP_CURRENCIES),
+                modifier = Modifier.size(32.dp)
+            )
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // "To" currency row (read-only)
         CurrencyRow(
             amount = if (state.isLoading) "..." else state.toAmount,
             onAmountChange = {}, // No-op
@@ -125,20 +142,6 @@ fun CurrencyExchangeScreen(
             onCurrencySelected = onToCurrencyChange,
             isEditable = false
         )
-
-        // Table for Ratio History
-        Spacer(modifier = Modifier.height(32.dp))
-        RatioHistoryScreen(
-
-        )
-
-        state.error?.let {
-            Text(
-                text = "${t(StringKeys.ERROR_PREFIX)} $it",
-                color = MaterialTheme.colorScheme.error,
-                modifier = Modifier.padding(top = 16.dp)
-            )
-        }
     }
 }
 
@@ -192,23 +195,28 @@ private fun CurrencySelector(selectedCurrency: Currency, onCurrencySelected: (Cu
     }
 
     if (showDialog) {
-        Dialog(onDismissRequest = { showDialog = false }) {
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            ) {
-                LazyColumn {
-                    items(Currency.entries) {
-                        val nameKey = "currency_${it.name.lowercase()}"
-                        Text(
-                            text = "${it.name} - ${t(nameKey)}",
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable { onCurrencySelected(it); showDialog = false }
-                                .padding(16.dp)
-                        )
-                    }
+        CurrencySelectionDialog(onCurrencySelected) { showDialog = false }
+    }
+}
+
+@Composable
+private fun CurrencySelectionDialog(onCurrencySelected: (Currency) -> Unit, onDismiss: () -> Unit) {
+    Dialog(onDismissRequest = onDismiss) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            LazyColumn {
+                items(Currency.entries) { currency ->
+                    val nameKey = "currency_${currency.name.lowercase()}"
+                    Text(
+                        text = "${currency.name} - ${t(nameKey)}",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { onCurrencySelected(currency); onDismiss() }
+                            .padding(16.dp)
+                    )
                 }
             }
         }

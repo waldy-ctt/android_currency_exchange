@@ -48,7 +48,7 @@ fun SettingsScreen(
             .fillMaxSize()
             .padding(vertical = 16.dp)
     ) {
-        // --- General Section ---
+        // man hinh setting dang hoi dai. nen chia nho ra
         SettingsGroup(title = t(StringKeys.GENERAL)) {
             ThemeSelector(currentTheme = theme, onThemeChange = onThemeChange)
             Divider()
@@ -180,6 +180,7 @@ private fun AboutSection(context: Context) {
             style = MaterialTheme.typography.labelMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
+        // phan about nay hoi don gian. co the them icon hoac link
         Text(
             text = t(StringKeys.AUTHOR_HAU),
             style = MaterialTheme.typography.labelMedium,

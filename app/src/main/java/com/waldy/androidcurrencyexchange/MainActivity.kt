@@ -29,7 +29,7 @@ class MainActivity : ComponentActivity() {
             val language by container.getLanguageUseCase().collectAsState(initial = Language.ENGLISH)
             val theme by container.getThemeUseCase().collectAsState(initial = "Device")
 
-            // Provide the current language to the Localization object
+            // nen tach rieng composable cho nay ra khong?
             CompositionLocalProvider(Localization.currentLanguage provides language) {
                 AndroidCurrencyExchangeTheme(
                     darkTheme = when (theme) {

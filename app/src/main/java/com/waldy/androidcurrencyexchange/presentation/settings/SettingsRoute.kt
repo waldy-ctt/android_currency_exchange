@@ -16,6 +16,7 @@ fun SettingsRoute() {
     val application = LocalContext.current.applicationContext as CurrencyApplication
     val container = application.container
 
+    // cho nay hoi dai dong. co the don gian hoa viec tao ViewModel khong?
     val viewModel: SettingsViewModel = viewModel(
         factory = SettingsViewModelFactory(
             getThemeUseCase = container.getThemeUseCase,

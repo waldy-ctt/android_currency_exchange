@@ -15,19 +15,19 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+data class RatioHistoryUiState(
+    val fromCurrency: Currency = Currency.USD,
+    val toCurrency: Currency = Currency.VND,
+    val history: List<CurrencyHistory> = emptyList(),
+    val isLoading: Boolean = false,
+)
+
 class RatioHistoryViewModel(
     private val getHistoryUseCase: GetHistoryUseCase
 ) : ViewModel() {
 
-    data class RatioHistoryState(
-        val fromCurrency: Currency = Currency.USD,
-        val toCurrency: Currency = Currency.VND,
-        val history: List<CurrencyHistory> = emptyList(),
-        val isLoading: Boolean = false,
-    )
-
-    private val _uiState = MutableStateFlow(RatioHistoryState())
-    val uiState: StateFlow<RatioHistoryState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow(RatioHistoryUiState())
+    val uiState: StateFlow<RatioHistoryUiState> = _uiState.asStateFlow()
 
     private var historyJob: Job? = null
 

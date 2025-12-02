@@ -51,8 +51,50 @@ fun MainActivityScreen() {
     val container = (LocalContext.current.applicationContext as CurrencyApplication).container
     val hasHistory by container.getHasHistoryUseCase().collectAsState(initial = false)
 
+    // man hinh loading hien thi cho den khi load xong history. co the hien skeleton thay the
     if (hasHistory) {
-        MainContent()
+        val tabTitles = listOf(
+            t(StringKeys.CURRENCY_CONVERTER),
+            t(StringKeys.SETTINGS)
+        )
+        val pagerState = rememberPagerState { tabTitles.size }
+        val scope = rememberCoroutineScope()
+
+        val backgroundColor = MaterialTheme.colorScheme.surface
+
+        Scaffold(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(backgroundColor),
+        ) { innerPadding ->
+            Column(
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+            ) {
+                CustomTabRow(
+                    tabTitles = tabTitles,
+                    selectedTabIndex = pagerState.currentPage,
+                    onTabClick = { index ->
+                        scope.launch {
+                            pagerState.animateScrollToPage(index)
+                        }
+                    }
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                HorizontalPager(
+                    state = pagerState,
+                    modifier = Modifier.fillMaxSize()
+                ) { page ->
+                    when (page) {
+                        0 -> CurrencyExchangeRoute()
+                        1 -> SettingsRoute()
+                    }
+                }
+            }
+        }
     } else {
         LoadingScreen()
     }
@@ -67,58 +109,10 @@ private fun LoadingScreen() {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             CircularProgressIndicator()
             Spacer(modifier = Modifier.height(16.dp))
-            Text(text = "Loading...", style = MaterialTheme.typography.titleMedium)
+            Text(text = "Preparing application...", style = MaterialTheme.typography.titleMedium)
         }
     }
 }
-
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-private fun MainContent() {
-    val tabTitles = listOf(
-        t(StringKeys.CURRENCY_CONVERTER),
-        t(StringKeys.SETTINGS)
-    )
-    val pagerState = rememberPagerState { tabTitles.size }
-    val scope = rememberCoroutineScope()
-
-    val backgroundColor = MaterialTheme.colorScheme.surface
-
-    Scaffold(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(backgroundColor),
-    ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .padding(innerPadding)
-                .padding(horizontal = 16.dp, vertical = 8.dp)
-        ) {
-            CustomTabRow(
-                tabTitles = tabTitles,
-                selectedTabIndex = pagerState.currentPage,
-                onTabClick = { index ->
-                    scope.launch {
-                        pagerState.animateScrollToPage(index)
-                    }
-                }
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            HorizontalPager(
-                state = pagerState,
-                modifier = Modifier.fillMaxSize()
-            ) { page ->
-                when (page) {
-                    0 -> CurrencyExchangeRoute()
-                    1 -> SettingsRoute()
-                }
-            }
-        }
-    }
-}
-
 
 @Composable
 private fun CustomTabRow(
